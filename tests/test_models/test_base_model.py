@@ -4,6 +4,7 @@
 import unittest
 from models.base_model import BaseModel
 import inspect
+from datetime import datetime
 
 
 class test_base_model(unittest.TestCase):
@@ -14,6 +15,7 @@ class test_base_model(unittest.TestCase):
         self.base1 = BaseModel()
         self.base2 = BaseModel()
         self.old_updated_at = self.base1.updated_at
+        self.my_model_json = self.base1.to_dict()
 
     def tearDown(self):
         """tearing down  test instance"""
@@ -47,7 +49,7 @@ class test_base_model(unittest.TestCase):
                 self.itexists = True
         self.assertTrue(self.itexists)
 
-    def test_method_to_dict(self):
+    def test_method_to_dict_exists(self):
         """This function tests if the method to_dict exists."""
         for func in self.setup:
             if func[0] == "to_dict":
@@ -65,3 +67,18 @@ class test_base_model(unittest.TestCase):
         self.assertIsNotNone(self.base1.id)
         self.assertNotEqual(self.base1.id, self.base2.id)
         self.assertIsInstance(self.base1.id, str)
+
+    def test_date_time(self):
+        """This method checks the type and existence of datettime prop"""
+        self.assertTrue(hasattr(self.base1, 'created_at'))
+        self.assertTrue(hasattr(self.base1, 'updated_at'))
+        self.assertIsInstance(self.base1.created_at, datetime)
+        self.assertIsInstance(self.my_model_json['created_at'], str)
+
+    def test_instance_init_from_kwargs(self):
+        """method for checking if instance is recreated from kwargs on init"""
+        mynewmodel = BaseModel(**self.my_model_json)
+        self.assertIsInstance(mynewmodel, BaseModel)
+        self.assertEqual(self.base1.id, mynewmodel.id)
+        self.assertFalse(self.base1 is mynewmodel)
+        self.assertTrue(self.base1.to_dict() == mynewmodel.to_dict())
