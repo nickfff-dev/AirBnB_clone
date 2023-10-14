@@ -27,7 +27,8 @@ class BaseModel():
 
     def __str__(self):
         """"prints the string rep of a class"""
-        return "[BaseModel] " + "(" + self.id + ") " + str(self.__dict__)
+        return "[" + self.__class__.__name__ + "] " + \
+            "(" + self.id + ") " + str(self.__dict__)
 
     def save(self):
         """method that updates the instance"""
