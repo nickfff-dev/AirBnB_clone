@@ -18,14 +18,12 @@ class BaseModel():
         args(list): wont be used.
         kwargs: key name pairs of instance attributes.
         """
-        if kwargs and len(kwargs):
-            for key in kwargs:
+        if kwargs:
+            for key, value in kwargs.items():
+                if key == 'created_at' or key == 'updated_at':
+                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
                 if key != '__class__':
-                    if key in ["created_at", "updated_at"]:
-                        setattr(self, key, datetime.strptime(
-                            kwargs[key], "%Y-%m-%dT%H:%M:%S.%f"))
-                    else:
-                        setattr(self, key, kwargs[key])
+                    setattr(self, key, value)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -39,6 +37,7 @@ class BaseModel():
 
     def save(self):
         """method that saves the instance to json"""
+        self.updated_at = datetime.now()
         storage.save()
 
     def to_dict(self):
