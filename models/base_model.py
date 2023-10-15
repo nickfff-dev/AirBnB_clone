@@ -25,9 +25,11 @@ class BaseModel():
                 if key != '__class__':
                     setattr(self, key, value)
         else:
+            from models import storage
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            storage.new(self)
 
     def __str__(self):
         """"prints the string rep of a class"""
@@ -38,7 +40,6 @@ class BaseModel():
         """method that saves the instance to json"""
         from models import storage
         self.updated_at = datetime.now()
-        storage.new(self.to_dict())
         storage.save()
 
     def to_dict(self):
