@@ -4,6 +4,8 @@
 """
 import json
 import os
+import datetime
+from models.base_model import BaseModel
 
 
 class FileStorage():
@@ -21,8 +23,10 @@ class FileStorage():
 
     def new(self, obj):
         """function for adding new object to __object dict"""
-        if obj and len(obj):
-            key = obj["__class__"] + "." + obj["id"]
+        if obj:
+            objclsname = obj['__class__']
+            id = obj['id']
+            key = objclsname + "." + id
             FileStorage.__objects[key] = obj
 
     def save(self):
@@ -37,4 +41,9 @@ class FileStorage():
         if os.path.exists(FileStorage.__file_path):
             with open(FileStorage.__file_path, 'r', encoding='utf-8') \
                     as json_file2:
-                FileStorage.__objects = json.loads(json_file2.read())
+                data = json.load(json_file2)
+                for k, v in data.items():
+                    class_name = k.split('.')[0]
+                    cls = globals()[class_name]
+                    obj = cls(**v)
+                    FileStorage.__objects[k] = obj.to_dict()

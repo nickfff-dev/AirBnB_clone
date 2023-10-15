@@ -5,7 +5,6 @@ by all BaseModelInstances.
 """
 import uuid
 from datetime import datetime
-from models import storage
 
 
 class BaseModel():
@@ -18,6 +17,7 @@ class BaseModel():
         args(list): wont be used.
         kwargs: key name pairs of instance attributes.
         """
+
         if kwargs:
             for key, value in kwargs.items():
                 if key == 'created_at' or key == 'updated_at':
@@ -28,7 +28,6 @@ class BaseModel():
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            storage.new(self.to_dict())
 
     def __str__(self):
         """"prints the string rep of a class"""
@@ -37,7 +36,9 @@ class BaseModel():
 
     def save(self):
         """method that saves the instance to json"""
+        from models import storage
         self.updated_at = datetime.now()
+        storage.new(self.to_dict())
         storage.save()
 
     def to_dict(self):
