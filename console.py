@@ -62,6 +62,16 @@ class HBNBCommand(cmd.Cmd):
                     print("]")
                 elif 'count()' in line:
                     print(len(class_objs))
+                elif 'show(' in line and ')' in line:
+                    id = args[1].split('(')[1].strip(')"')
+                    if id:
+                        key = class_name + "." + id
+                        if key in class_objs:
+                            print(class_objs[key])
+                        else:
+                            print("** no instance found **")
+                    else:
+                        print("** no instance found **")
             else:
                 print("** class doesn't exist **")
 
