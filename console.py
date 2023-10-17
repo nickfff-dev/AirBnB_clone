@@ -36,6 +36,32 @@ class HBNBCommand(cmd.Cmd):
     def help_EOF(self):
         print("EOF command to exit the program")
 
+    def default(self, line):
+        """
+        Method called on an input line when the
+        command prefix is not recognized.
+        In this case it will be used to handle
+        <class name>.all() commands.
+        """
+        if '.' in line and 'all()' in line:
+            args = line.split('.')
+            class_name = args[0]
+            if class_name in ['BaseModel', 'User', 'Place', 'Amenity',
+                              'City', 'State', 'Review']:
+                objs = storage.all()
+                class_objs = {k: v for k, v in objs.items()
+                              if k.split('.')[0] == class_name}
+                print("[", end="")
+                first = True
+                for v in class_objs.values():
+                    if not first:
+                        print(", ", end="")
+                    print(v, end="")
+                    first = False
+                print("]")
+            else:
+                print("** class doesn't exist **")
+
     def do_create(self, arg):
         """
         Creates a new instance of BaseModel, saves it.
@@ -58,7 +84,8 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in ['BaseModel', 'User', 'Place', 'Amenity', 'City', 'State', 'Review']:
+        if args[0] not in ['BaseModel', 'User', 'Place',
+                           'Amenity', 'City', 'State', 'Review']:
             print("** class doesn't exist **")
             return
         if len(args) == 1:
@@ -71,7 +98,7 @@ class HBNBCommand(cmd.Cmd):
                 print(obj_dict[key])
             else:
                 print("** no instance found **")
-        except:
+        except KeyError:
             pass
 
     def do_destroy(self, arg):
@@ -82,7 +109,8 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in ['BaseModel', 'User', 'Place', 'Amenity', 'City', 'State', 'Review']:
+        if args[0] not in ['BaseModel', 'User', 'Place',
+                           'Amenity', 'City', 'State', 'Review']:
             print("** class doesn't exist **")
             return
         if len(args) == 1:
@@ -96,20 +124,23 @@ class HBNBCommand(cmd.Cmd):
                 storage.save()
             else:
                 print("** no instance found **")
-        except:
+        except KeyError:
             pass
 
     def do_all(self, arg):
         """
-        Prints all string representation of all instances based or not on the class name.
+        Prints all string representation of all
+        instances based or not on the class name.
         """
         obj_dict = storage.all()
         if not arg:
             print([str(v) for k, v in obj_dict.items()])
-        elif arg not in ['BaseModel', 'User', 'Place', 'Amenity', 'City', 'State', 'Review']:
+        elif arg not in ['BaseModel', 'User', 'Place',
+                         'Amenity', 'City', 'State', 'Review']:
             print("** class doesn't exist **")
         else:
-            print([str(v) for k, v in obj_dict.items() if v.__class__.__name__ == arg])
+            print([str(v) for k, v in obj_dict.items()
+                   if v.__class__.__name__ == arg])
 
     def do_update(self, arg):
         """
@@ -120,7 +151,8 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-        if args[0] not in ['BaseModel', 'User', 'Place', 'Amenity', 'City', 'State', 'Review']:
+        if args[0] not in ['BaseModel', 'User', 'Place',
+                           'Amenity', 'City', 'State', 'Review']:
             print("** class doesn't exist **")
             return
         if len(args) == 1:
@@ -147,7 +179,7 @@ class HBNBCommand(cmd.Cmd):
                         storage.save()
             else:
                 print("** no instance found **")
-        except:
+        except Exception as e:
             pass
 
 
