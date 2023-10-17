@@ -33,8 +33,8 @@ class BaseModel():
 
     def __str__(self):
         """"prints the string rep of a class"""
-        return "[" + self.__class__.__name__ + "]" + \
-            "(" + self.id + ") " + str(self.__dict__)
+        return "[{}] ({}) {}".format(self.__class__.__name__,
+                                     self.id, self.__dict__)
 
     def save(self):
         """method that saves the instance to json"""
