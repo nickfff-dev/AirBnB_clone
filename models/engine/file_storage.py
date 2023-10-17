@@ -6,6 +6,12 @@ import json
 import os
 from datetime import datetime
 from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.amenity import Amenity
+from models.city import City
+from models.review import Review
+from models.state import State
 
 
 class FileStorage():
@@ -27,18 +33,14 @@ class FileStorage():
             objclsname = obj.__class__.__name__
             id = obj.id
             key = objclsname + "." + id
-            FileStorage.__objects[key] = obj.__dict__
+            FileStorage.__objects[key] = obj
 
     def save(self):
         """function to serialize obj to str and store in file"""
         all_objs = self.all()
         myobjs = {}
         for k, v in all_objs.items():
-            v_copy = {key: datetime.isoformat(value) if key in
-                      ["created_at", "updated_at"] else value for key, value in
-                      v.items()}
-            v_copy['__class__'] = k.split('.')[0]
-            myobjs[k] = v_copy
+            myobjs[k] = v.to_dict()
         with open(FileStorage.__file_path, "w", encoding='utf-8') \
                 as json_file1:
             return json.dump(myobjs, json_file1)
@@ -53,4 +55,4 @@ class FileStorage():
                     class_name = k.split('.')[0]
                     cls = globals()[class_name]
                     obj = cls(**v)
-                    FileStorage.__objects[k] = obj.__dict__
+                    FileStorage.__objects[k] = obj
