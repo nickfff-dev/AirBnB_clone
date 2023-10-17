@@ -43,7 +43,7 @@ class HBNBCommand(cmd.Cmd):
         In this case it will be used to handle
         <class name>.all() commands.
         """
-        if '.' in line and 'all()' in line:
+        if '.' in line:
             args = line.split('.')
             class_name = args[0]
             if class_name in ['BaseModel', 'User', 'Place', 'Amenity',
@@ -51,14 +51,17 @@ class HBNBCommand(cmd.Cmd):
                 objs = storage.all()
                 class_objs = {k: v for k, v in objs.items()
                               if k.split('.')[0] == class_name}
-                print("[", end="")
-                first = True
-                for v in class_objs.values():
-                    if not first:
-                        print(", ", end="")
-                    print(v, end="")
-                    first = False
-                print("]")
+                if 'all()' in line:
+                    print("[", end="")
+                    first = True
+                    for v in class_objs.values():
+                        if not first:
+                            print(", ", end="")
+                        print(v, end="")
+                        first = False
+                    print("]")
+                elif 'count()' in line:
+                    print(len(class_objs))
             else:
                 print("** class doesn't exist **")
 
