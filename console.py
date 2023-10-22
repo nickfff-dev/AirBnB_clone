@@ -88,6 +88,83 @@ class HBNBCommand(cmd.Cmd):
                             pass
                     else:
                         print("** no instance found **")
+                elif 'update(' in line and ')' in line:
+                    id = args[1].split('(')[1].split(',')[0].strip(')"')
+                    if id:
+                        key = class_name + "." + id
+                        if key in class_objs:
+                            if '{' in line:
+                                dict_str = \
+                                    line.split('{', 1)[1].rsplit('}', 1)[0]
+                                try:
+                                    dict_repr = {k.strip(' "\''):
+                                                 v.strip(' "\'') for k, v in
+                                                 (item.split(':') for item in
+                                                  dict_str.split(','))}
+                                except ValueError:
+                                    print("** attribute name missing **")
+                                    return
+                                for attr, value in dict_repr.items():
+                                    if attr:
+                                        if attr not in ['id', 'created_at',
+                                                        'updated_at']:
+                                            if value:
+                                                try:
+                                                    value = int(value)
+                                                except ValueError:
+                                                    try:
+                                                        value = float(value)
+                                                    except ValueError:
+                                                        value = \
+                                                            value.strip(' "\'')
+                                                setattr(class_objs[key],
+                                                        attr, value)
+                                            else:
+                                                print("** value missing **")
+                                                continue
+                                    else:
+                                        print("** attribute name missing **")
+                                        continue
+                                storage.save()
+                            else:
+                                try:
+                                    attr_name = \
+                                        args[1].split(',')[1].strip(' "\'')
+                                except IndexError:
+                                    print("** attribute name missing **")
+                                    return
+                                try:
+                                    attr_value = \
+                                        args[1].split(',')[2].strip(' "\')')
+                                except IndexError:
+                                    print("** value missing **")
+                                    return
+                                if attr_name:
+                                    if attr_name not in ['id', 'created_at',
+                                                         'updated_at']:
+                                        if attr_value:
+                                            try:
+                                                attr_value = int(attr_value)
+                                            except ValueError:
+                                                try:
+                                                    attr_value = \
+                                                        float(attr_value)
+                                                except ValueError:
+                                                    attr_value = \
+                                                        attr_value.strip('\'"')
+                                            setattr(class_objs[key],
+                                                    attr_name, attr_value)
+                                            storage.save()
+                                        else:
+                                            print("** value missing **")
+                                            return
+                                else:
+                                    print("** attribute name missing **")
+                                    return
+                        else:
+                            print("** no instance found **")
+                    else:
+                        print("** instance id is missing **")
             else:
                 print("** class doesn't exist **")
 
@@ -102,8 +179,9 @@ class HBNBCommand(cmd.Cmd):
             new_instance = globals()[arg]()
             new_instance.save()
             print(new_instance.id)
-        except NameError:
+        except KeyError:
             print("** class doesn't exist **")
+            pass
 
     def do_show(self, arg):
         """
@@ -193,19 +271,32 @@ class HBNBCommand(cmd.Cmd):
             if key in obj_dict:
                 if len(args) == 2:
                     print("** attribute name missing **")
+                    return
                 elif len(args) == 3:
                     print("** value missing **")
+                    return
                 else:
-                    if args[2] not in ['id', 'created_at', 'updated_at']:
-                        try:
-                            new_value = int(args[3])
-                        except ValueError:
-                            try:
-                                new_value = float(args[3])
-                            except ValueError:
-                                new_value = args[3].strip('\'"')
-                        setattr(obj_dict[key], args[2], new_value)
-                        storage.save()
+                    passed_value = args[3].strip(' "\'')
+                    passed_attr = args[2].strip(' "\'')
+                    if passed_attr:
+                        if passed_attr not in ['id', 'created_at',
+                                               'updated_at']:
+                            if passed_value:
+                                try:
+                                    new_value = int(passed_value)
+                                except ValueError:
+                                    try:
+                                        new_value = float(passed_value)
+                                    except ValueError:
+                                        new_value = passed_value
+                                setattr(obj_dict[key], passed_attr, new_value)
+                                storage.save()
+                            else:
+                                print("** value missing **")
+                                return
+                    else:
+                        print("** attribute name missing **")
+                        return
             else:
                 print("** no instance found **")
         except Exception as e:
