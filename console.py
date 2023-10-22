@@ -72,6 +72,22 @@ class HBNBCommand(cmd.Cmd):
                             print("** no instance found **")
                     else:
                         print("** no instance found **")
+                elif 'destroy(' in line and ')' in line:
+                    id = args[1].split('(')[1].strip(')"')
+                    if id:
+                        key = class_name + "." + id
+                        obj_dict = storage.all()
+                        try:
+                            if key in obj_dict:
+                                del obj_dict[key]
+                                storage.save()
+                            else:
+                                print("** no instance found **")
+                        except KeyError:
+                            print("** no instance found **")
+                            pass
+                    else:
+                        print("** no instance found **")
             else:
                 print("** class doesn't exist **")
 
