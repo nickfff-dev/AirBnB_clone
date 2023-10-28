@@ -1,12 +1,6 @@
 header {
-    background-color: white;
+    background: #fff url('../images/logo.png') 20px center no-repeat;
     height: 70px;
     width: 100%;
     border-bottom: 1px solid #CCCCCC;
-}
-
-.logo {
-    padding-left: 20px;
-    line-height: 70px;
-    content: url(/images/logo.png);
 }
